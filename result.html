@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Brain Storming - Result</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffe6f0;
+      text-align: center;
+      padding: 40px;
+    }
+    #resultBox {
+      background-color: #fce4ec;
+      border: 2px solid #f06292;
+      border-radius: 12px;
+      padding: 25px;
+      font-size: 20px;
+      color: #880e4f;
+      font-weight: bold;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="resultBox">
+    <h2>🎉 <u>RESULT</u></h2>
+    <p>👤 Name: <b id="rName"></b></p>
+    <p>🏫 Class: <b id="rClass"></b></p>
+    <p>✅ Score: <b id="rScore"></b></p>
+    <p>🔁 Moves: <b id="rMoves"></b></p>
+    <p>⏱️ Time Left: <b id="rTimeLeft"></b> seconds</p>
+    <br>
+    <i>Thanks for playing! 🎯</i>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("rName").textContent = params.get("name");
+    document.getElementById("rClass").textContent = params.get("class");
+    document.getElementById("rScore").textContent = params.get("score");
+    document.getElementById("rMoves").textContent = params.get("moves");
+    document.getElementById("rTimeLeft").textContent = params.get("time");
+  </script>
+</body>
+</html>

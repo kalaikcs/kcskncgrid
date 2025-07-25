@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> BRAIN STORMING - ROUND I</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #ffffff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      margin-top: 20px;
+      color: #2c3e50;
+    }
+
+    .login-box, .instructions {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      width: 300px;
+      margin: 40px auto;
+    }
+
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 25px;
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #3498db;
+    }
+
+    #playerName {
+      font-size: 22px;
+      color: #1a237e;
+      font-weight: bold;
+      margin: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 110px);
+      gap: 15px;
+      justify-content: center;
+      margin: 30px auto;
+      display: none;
+    }
+
+    .card {
+      width: 110px;
+      height: 110px;
+      background: linear-gradient(to bottom right, #bbdefb, #90caf9);
+      color: #2c3e50;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.4s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.07);
+      background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);
+    }
+
+    .flipped {
+      background: linear-gradient(to bottom right, #d1f2eb, #b2ebf2);
+    }
+
+    .matched {
+      background: linear-gradient(to bottom right, #81c784, #a5d6a7);
+      color: white;
+    }
+
+    #gameStats, #memorizeStats {
+      font-size: 20px;
+      margin: 10px;
+    }
+
+    #score, #moves {
+      font-weight: bold;
+      font-size: 22px;
+      color: #d32f2f;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<h2>🧠 KCSKNC - BRAIN STORMING ROUND I</h2>
+
+<div class="login-box" id="loginBox">
+  <h3>🔐 Login</h3>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<div class="instructions hidden" id="instructionsBox">
+  <h3>📝 Game Instructions:</h3>
+  <ol style="text-align: left; max-width: 500px; margin: 0 auto;">
+    <li>Enter your name to start the game.</li>
+    <li><strong>Memorizing Phase (30 sec):</strong> All cards are face-up with a countdown.</li>
+    <li><strong>Game Phase (60 sec):</strong> Cards flip back and matching begins with timer.</li>
+  </ol>
+  <input type="text" id="nameInput" placeholder="Enter your name (Eg. RAM K">
+  <br><br>
+  <select id="classInput">
+    <option value="">Select Class</option>
+    <option value="I B.Sc">I B.Sc </option>
+    <option value="II B.Sc">II B.Sc</option>
+    <option value="III B.Sc">III B.Sc</option>
+<option value="I B.C.A - A ">I B.C.A -A</option>
+<option value="I B.C.A - B ">I B.C.A -B</option>
+<option value="II B.C.A - A ">II B.C.A-A </option>
+<option value="II B.C.A - B ">II B.C.A-B</option>
+<option value="III B.C.A - A ">III B.C.A-A </option>
+<option value="III B.C.A - B ">III B.C.A-B </option>
+<option value="I B.Com  - A ">I B.Com -A </option>
+<option value="I B.Com  - B ">I B.Com -B </option>
+<option value="II B.Com  - A ">II B.Com -A</option>
+<option value="II B.Com  - B ">II B.Com -B </option>
+<option value="II B.Com  - C ">II B.Com -C </option>
+<option value="III B.Com  - A ">III B.Com -A </option>
+<option value="III B.Com  - B ">I B.Com -B </option>
+<option value="III B.Com  - C ">I B.Com -C </option>
+ <option value="I B.B.A">I B.B.A </option>
+    <option value="II B.B.A">II B.B.A</option>
+    <option value="III B.B.A">III B.B.A</option>
+
+  </select>
+  <br><br>
+  <button onclick="startMemorizing()">Start Game</button>
+</div>
+
+<p id="playerName" class="hidden"></p>
+
+<div id="memorizeStats" class="hidden">
+  ⏳ Memorizing Time Left: <span id="memorizeTimer">30</span> sec
+</div>
+
+<div id="gameStats" class="hidden">
+  🎯 Score: <span id="score">0</span> |
+  🔁 Moves: <span id="moves">0</span> |
+  ⏱️ Time Left: <span id="timer">60</span> sec
+</div>
+
+<div class="grid" id="gameBoard"></div>
+
+<script>
+  const cards = [
+    ['2 + 3', '5'],
+    ['4 × 2', '8'],
+    ['9 - 4', '5'],
+    ['6 ÷ 2', '3'],
+    ['5 × 5', '25'],
+    ['10 - 7', '3'],
+    ['12 ÷ 4', '3'],
+    ['7 + 2', '9']
+  ];
+
+  let flatCards = cards.flat().sort(() => Math.random() - 0.5);
+  let flippedCards = [], score = 0, moves = 0;
+  let lock = true, gameOver = false;
+  let memorizeTimeLeft = 30, gameTimeLeft = 60;
+  let memorizeTimer, gameTimer;
+  let playerName = "", playerClass = "";
+
+  function login() {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
+    if (user === "kcskncgrid" && pass === "2025") {
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("instructionsBox").classList.remove("hidden");
+    } else {
+      alert("❌ Invalid credentials!");
+    }
+  }
+
+  function startMemorizing() {
+    playerName = document.getElementById("nameInput").value.trim();
+    playerClass = document.getElementById("classInput").value;
+
+    if (!playerName || !playerClass) {
+      alert("Please enter name and select class!");
+      return;
+    }
+
+    document.getElementById("instructionsBox").classList.add("hidden");
+    document.getElementById("playerName").textContent = `👤 ${playerName} (${playerClass})`;
+    document.getElementById("playerName").classList.remove("hidden");
+
+    createBoard();
+    document.querySelectorAll('.card').forEach(c => c.textContent = c.getAttribute('data-content'));
+    document.getElementById("gameBoard").style.display = "grid";
+    document.getElementById("memorizeStats").classList.remove("hidden");
+    memorizeTimer = setInterval(updateMemorizeTimer, 1000);
+  }
+
+  function createBoard() {
+    const board = document.getElementById("gameBoard");
+    board.innerHTML = "";
+    flatCards.forEach((card, i) => {
+      const div = document.createElement("div");
+      div.className = "card";
+      div.setAttribute("data-content", card);
+      div.setAttribute("data-index", i);
+      div.textContent = "?";
+      board.appendChild(div);
+    });
+  }
+
+  function updateMemorizeTimer() {
+    memorizeTimeLeft--;
+    document.getElementById("memorizeTimer").textContent = memorizeTimeLeft;
+    if (memorizeTimeLeft === 0) {
+      clearInterval(memorizeTimer);
+      document.getElementById("memorizeStats").classList.add("hidden");
+      startGame();
+    }
+  }
+
+  function startGame() {
+    document.getElementById("gameStats").classList.remove("hidden");
+    document.querySelectorAll('.card').forEach(card => {
+      card.textContent = "?";
+      card.addEventListener("click", handleCardClick);
+    });
+    lock = false;
+    gameTimer = setInterval(updateGameTimer, 1000);
+  }
+
+  function updateGameTimer() {
+    gameTimeLeft--;
+    document.getElementById("timer").textContent = gameTimeLeft;
+    if (gameTimeLeft === 0) endGame();
+  }
+
+  function handleCardClick() {
+    if (lock || this.classList.contains("flipped") || this.classList.contains("matched") || gameOver) return;
+
+    this.textContent = this.getAttribute("data-content");
+    this.classList.add("flipped");
+    flippedCards.push(this);
+
+    if (flippedCards.length === 2) {
+      lock = true;
+      moves++;
+      updateStats();
+      const [first, second] = flippedCards;
+      const val1 = first.getAttribute("data-content");
+      const val2 = second.getAttribute("data-content");
+
+      if (isMatch(val1, val2)) {
+        first.classList.add("matched");
+        second.classList.add("matched");
+        flippedCards = [];
+        lock = false;
+        score++;
+        updateStats();
+        if (score === cards.length) endGame();
+      } else {
+        setTimeout(() => {
+          flippedCards.forEach(c => {
+            c.textContent = "?";
+            c.classList.remove("flipped");
+          });
+          flippedCards = [];
+          lock = false;
+        }, 1000);
+      }
+    }
+  }
+
+  function updateStats() {
+    document.getElementById("score").textContent = score;
+    document.getElementById("moves").textContent = moves;
+  }
+
+  function endGame() {
+    if (gameOver) return;
+    gameOver = true;
+    clearInterval(gameTimer);
+    document.querySelectorAll(".card").forEach(c => c.style.pointerEvents = "none");
+
+    // Redirect to result.html with query parameters
+    const url = `result.html?name=${encodeURIComponent(playerName)}&class=${encodeURIComponent(playerClass)}&score=${score}&moves=${moves}&time=${gameTimeLeft}`;
+    window.location.href = url;
+  }
+
+  function isMatch(a, b) {
+    try {
+      return eval(a.replace('×', '*').replace('÷', '/')) == b ||
+             eval(b.replace('×', '*').replace('÷', '/')) == a;
+    } catch {
+      return false;
+    }
+  }
+</script>
+</body>
+</html>
